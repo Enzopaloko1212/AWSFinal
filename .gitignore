@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Lambda zips (generated during deploy)
+backend/*.zip
+
+# AWS temp files
+/tmp/
+
+# Environment / credentials
+.env
+*.env
+.aws/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+*.swp
