@@ -1,0 +1,115 @@
+import base64
+import json
+import os
+import uuid
+from datetime import datetime, timezone
+
+import boto3
+from botocore.exceptions import ClientError
+
+REGION = os.environ.get("REGION", "ap-southeast-1")
+COLLECTION_ID = os.environ.get("COLLECTION_ID", "smart-attendance-faces")
+STUDENTS_TABLE = os.environ.get("STUDENTS_TABLE", "Students")
+LOGS_TABLE = os.environ.get("LOGS_TABLE", "AttendanceLogs")
+SES_SENDER = os.environ["SES_SENDER"]
+MATCH_THRESHOLD = float(os.environ.get("MATCH_THRESHOLD", "90"))
+
+rekognition = boto3.client("rekognition", region_name=REGION)
+ses = boto3.client("ses", region_name=REGION)
+ddb = boto3.resource("dynamodb", region_name=REGION)
+students_table = ddb.Table(STUDENTS_TABLE)
+logs_table = ddb.Table(LOGS_TABLE)
+
+
+def _response(status, body):
+    return {
+        "statusCode": status,
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        "body": json.dumps(body),
+    }
+
+
+def _parse_body(event):
+    body = event.get("body")
+    if body is None:
+        return event
+    if event.get("isBase64Encoded"):
+        body = base64.b64decode(body).decode("utf-8")
+    return json.loads(body) if isinstance(body, str) else body
+
+
+def handler(event, context):
+    try:
+        payload = _parse_body(event)
+        photo_b64 = payload["photoBase64"]
+    except (KeyError, TypeError, ValueError):
+        return _response(400, {"error": "Missing or invalid field: photoBase64"})
+
+    try:
+        photo_bytes = base64.b64decode(photo_b64)
+    except Exception:
+        return _response(400, {"error": "photoBase64 is not valid base64"})
+
+    try:
+        search = rekognition.search_faces_by_image(
+            CollectionId=COLLECTION_ID,
+            Image={"Bytes": photo_bytes},
+            FaceMatchThreshold=MATCH_THRESHOLD,
+            MaxFaces=1,
+        )
+    except rekognition.exceptions.InvalidParameterException:
+        return _response(404, {"matched": False, "error": "No detectable face in image"})
+    except ClientError as e:
+        return _response(500, {"error": f"Rekognition failed: {e.response['Error']['Message']}"})
+
+    matches = search.get("FaceMatches", [])
+    if not matches:
+        return _response(404, {"matched": False, "error": "No matching face above threshold"})
+
+    student_id = matches[0]["Face"]["ExternalImageId"]
+    confidence = matches[0]["Similarity"]
+
+    student = students_table.get_item(Key={"studentId": student_id}).get("Item")
+    if not student:
+        return _response(404, {"matched": False, "error": f"Face matched ExternalImageId {student_id} but no student record"})
+
+    timestamp = datetime.now(timezone.utc).isoformat()
+    log_id = str(uuid.uuid4())
+
+    logs_table.put_item(
+        Item={
+            "logId": log_id,
+            "studentId": student_id,
+            "name": student["name"],
+            "timestamp": timestamp,
+            "status": "present",
+            "confidence": str(round(confidence, 2)),
+        }
+    )
+
+    try:
+        ses.send_email(
+            Source=SES_SENDER,
+            Destination={"ToAddresses": [student["email"]]},
+            Message={
+                "Subject": {"Data": "Attendance confirmed"},
+                "Body": {
+                    "Text": {
+                        "Data": f"Attendance confirmed for {student['name']} at {timestamp}."
+                    }
+                },
+            },
+        )
+    except ClientError as e:
+        print(f"SES send failed (non-fatal): {e.response['Error']['Message']}")
+
+    return _response(200, {
+        "matched": True,
+        "studentId": student_id,
+        "name": student["name"],
+        "timestamp": timestamp,
+        "confidence": round(confidence, 2),
+    })
