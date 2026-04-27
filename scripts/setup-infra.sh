@@ -6,13 +6,13 @@
 set -e  # stop on first error
 
 # ─── FILL THESE IN WHEN YOU HAVE AWS ACCOUNT DETAILS ──────────────────────────
-ACCOUNT_ID="YOUR_ACCOUNT_ID_HERE"   # e.g. 123456789012
-LEADER_EMAIL="YOUR_EMAIL_HERE"      # e.g. leorenzo@gmail.com
+ACCOUNT_ID="782028084000"            # e.g. 123456789012
+LEADER_EMAIL="lanz.reddamien456@gmail.com"  # e.g. leorenzo@gmail.com
 # ──────────────────────────────────────────────────────────────────────────────
 
 REGION="ap-southeast-1"
-PHOTO_BUCKET="smart-attendance-photos"
-FRONTEND_BUCKET="smart-attendance-frontend"
+PHOTO_BUCKET="smart-attendance-photos-${ACCOUNT_ID}"
+FRONTEND_BUCKET="smart-attendance-frontend-${ACCOUNT_ID}"
 COLLECTION_ID="smart-attendance-faces"
 ROLE_NAME="lambda-attendance-role"
 POLICY_NAME="lambda-attendance-policy"
