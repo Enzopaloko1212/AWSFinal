@@ -30,18 +30,29 @@ if [ "$ACCOUNT_ID" = "YOUR_ACCOUNT_ID_HERE" ]; then
   exit 1
 fi
 
-# ─── 1. S3 Photo Bucket ───────────────────────────────────────────────────────
-echo "[1/6] Creating S3 photo bucket..."
+# ─── 1. S3 Buckets (photos + frontend) ───────────────────────────────────────
+echo "[1/6] Creating S3 buckets..."
 aws s3api create-bucket \
   --bucket "$PHOTO_BUCKET" \
   --region "$REGION" \
-  --create-bucket-configuration LocationConstraint="$REGION" 2>/dev/null || echo "  Bucket already exists — skipping."
+  --create-bucket-configuration LocationConstraint="$REGION" 2>/dev/null || echo "  Photo bucket already exists — skipping."
 
 aws s3api put-public-access-block \
   --bucket "$PHOTO_BUCKET" \
   --public-access-block-configuration \
     BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
 echo "  Done: s3://$PHOTO_BUCKET (public access blocked)"
+
+aws s3api create-bucket \
+  --bucket "$FRONTEND_BUCKET" \
+  --region "$REGION" \
+  --create-bucket-configuration LocationConstraint="$REGION" 2>/dev/null || echo "  Frontend bucket already exists — skipping."
+
+aws s3api put-public-access-block \
+  --bucket "$FRONTEND_BUCKET" \
+  --public-access-block-configuration \
+    BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+echo "  Done: s3://$FRONTEND_BUCKET (public access blocked — opened up in Wave 4)"
 
 # ─── 2. Rekognition Face Collection ──────────────────────────────────────────
 echo "[2/6] Creating Rekognition collection..."
