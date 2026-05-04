@@ -1,46 +1,85 @@
 # Wave 1 Prompt — Infrastructure Setup
 
-Use this prompt when starting Wave 1. Paste it into Claude Code or GitHub Copilot Chat.
+Use this prompt when starting Wave 1. Paste into Claude Code or GitHub Copilot Chat.
 
 ---
 
-## Prompt
+## Context
 
-You are helping set up the AWS infrastructure for a Smart Attendance System (Group 1, UA&P Advanced Cloud Computing).
+You are setting up the AWS infrastructure for a Smart Attendance System (Group 1, UA&P Advanced Cloud Computing).
 
-**Project:** Serverless face-recognition attendance system on AWS.
-**Region:** ap-southeast-1 (Singapore)
+**Account ID:** `782028084000`
+**Region:** `ap-southeast-1` (Singapore)
 **Rule:** Everything via AWS CLI only — no console clicking.
 
-**My AWS Account ID is:** `[PASTE ACCOUNT_ID HERE]`
-**My email (for billing alarm and SES):** `[PASTE EMAIL HERE]`
+## Architecture layers this wave creates
 
-Run the script at `scripts/setup-infra.sh` to create all infrastructure. Before running, fill in `ACCOUNT_ID` and `LEADER_EMAIL` at the top of that file.
+- **Security Layer** — IAM role + policy that grants Lambda permission to all services
+- **Data Layer** — DynamoDB `Students` table, DynamoDB `AttendanceLogs` table (with GSI), S3 photo bucket
+- **AI Layer** — Rekognition face collection
+- **Notification Layer** — SES email identity verified
+- **Frontend Layer** — S3 frontend bucket (created now, opened up in Wave 4)
+- **Cost control** — CloudWatch billing alarm at $1 threshold
 
-The script will create:
-1. S3 bucket `smart-attendance-photos` (public access blocked)
-2. Rekognition collection `smart-attendance-faces`
-3. DynamoDB table `Students` (PK: studentId)
-4. DynamoDB table `AttendanceLogs` (PK: logId, GSI on studentId+timestamp)
-5. IAM role `lambda-attendance-role` with permissions for S3, Rekognition, DynamoDB, SES, CloudWatch Logs
-6. SES email verification for my email address
-7. $1 billing alarm via CloudWatch + SNS
+---
 
-After running, verify with:
+## Steps
+
+Run `scripts/setup-infra.sh` from the project root in Git Bash. The script is already filled in with the correct values. It creates:
+
+1. S3 bucket `smart-attendance-photos-782028084000` (public access blocked — photo storage)
+2. S3 bucket `smart-attendance-frontend-782028084000` (public access blocked until Wave 4)
+3. Rekognition collection `smart-attendance-faces`
+4. DynamoDB table `Students` (PK: studentId)
+5. DynamoDB table `AttendanceLogs` (PK: logId, GSI: studentId-timestamp-index)
+6. IAM role `lambda-attendance-role` + inline policy `lambda-attendance-policy`
+7. SES email verification for `lanz.reddamien456@gmail.com`
+8. CloudWatch billing alarm `BillingAlarm-1USD` via SNS (in us-east-1)
+
 ```bash
-aws s3 ls | grep smart-attendance
-aws rekognition list-collections --region ap-southeast-1
-aws dynamodb list-tables --region ap-southeast-1
-aws iam get-role --role-name lambda-attendance-role
+bash scripts/setup-infra.sh
 ```
 
-Save the Role ARN output — it is needed for Wave 2.
-Format: `arn:aws:iam::ACCOUNT_ID:role/lambda-attendance-role`
+---
 
-Also verify all team emails with SES before Wave 2:
+## Verify
+
+```bash
+# Data Layer — buckets
+aws s3 ls | grep smart-attendance
+
+# AI Layer — Rekognition
+aws rekognition list-collections --region ap-southeast-1
+
+# Data Layer — DynamoDB
+aws dynamodb list-tables --region ap-southeast-1
+
+# Security Layer — IAM
+aws iam get-role --role-name lambda-attendance-role
+aws iam list-role-policies --role-name lambda-attendance-role
+
+# Notification Layer — SES
+aws ses get-identity-verification-attributes \
+  --identities lanz.reddamien456@gmail.com --region ap-southeast-1
+
+# Cost control — billing alarm
+aws cloudwatch describe-alarms --alarm-names BillingAlarm-1USD --region us-east-1
+```
+
+To verify additional teammate emails with SES:
 ```bash
 aws ses verify-email-identity --email-address TEAMMATE_EMAIL --region ap-southeast-1
 ```
-Each teammate must click the verification link in their inbox.
+Each teammate must click the verification link in their inbox before Wave 2.
 
-**When Wave 1 is complete:** All resources exist, billing alarm is active, and the Role ARN is noted. Move to Wave 2.
+---
+
+## Outputs needed for Wave 2
+
+- **Role ARN:** `arn:aws:iam::782028084000:role/lambda-attendance-role`
+- **Photo bucket:** `smart-attendance-photos-782028084000`
+- **Rekognition collection:** `smart-attendance-faces`
+- **DynamoDB tables:** `Students`, `AttendanceLogs`
+- **SES sender:** `lanz.reddamien456@gmail.com`
+
+**Wave 1 is complete when:** all resources exist, SES is verified, billing alarm active. Move to Wave 2.
