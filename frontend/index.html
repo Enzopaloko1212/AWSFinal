@@ -10,176 +10,187 @@
     :root {
       --red: #c0392b;
       --red-dark: #a93226;
-      --red-light: #e74c3c;
+      --red-light: #fadbd8;
       --white: #ffffff;
-      --gray: #f5f5f5;
-      --gray-border: #ddd;
-      --text: #222;
-      --text-muted: #666;
+      --gray: #f4f4f4;
+      --border: #e0e0e0;
+      --text: #1a1a1a;
+      --muted: #888;
+      --green: #1e8449;
+      --green-bg: #eafaf1;
+      --green-border: #a9dfbf;
     }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--gray);
-      color: var(--text);
-      min-height: 100dvh;
-    }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--gray); color: var(--text); min-height: 100dvh; }
 
+    /* ── HEADER ── */
     header {
       background: var(--red);
       color: var(--white);
-      padding: 18px 32px;
+      padding: 16px 28px;
       display: flex;
       align-items: center;
       gap: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    header p  { font-size: 0.78rem; opacity: 0.8; margin-top: 2px; }
 
-    header svg { flex-shrink: 0; }
-
-    header h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: 0.02em; }
-    header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
-
+    /* ── NAV TABS ── */
     nav {
       background: var(--white);
       display: flex;
-      border-bottom: 2px solid var(--gray-border);
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-
     nav button {
       flex: 1;
-      padding: 14px;
+      padding: 14px 8px;
       border: none;
       background: none;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--muted);
       cursor: pointer;
       border-bottom: 3px solid transparent;
-      transition: all 0.2s;
+      transition: all 0.18s;
     }
-
-    nav button.active {
-      color: var(--red);
-      border-bottom-color: var(--red);
-      background: #fef5f5;
-    }
-
+    nav button.active { color: var(--red); border-bottom-color: var(--red); background: #fef9f9; }
     nav button:hover:not(.active) { background: var(--gray); }
 
-    main { max-width: 560px; margin: 32px auto; padding: 0 16px 40px; }
-
+    /* ── LAYOUT ── */
+    main { max-width: 620px; margin: 28px auto; padding: 0 16px 60px; }
     .tab { display: none; }
     .tab.active { display: block; }
 
     .card {
       background: var(--white);
       border-radius: 10px;
-      padding: 28px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      padding: 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+      margin-bottom: 16px;
     }
-
     .card h2 {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--red);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       padding-bottom: 10px;
-      border-bottom: 1px solid var(--gray-border);
+      border-bottom: 1px solid var(--border);
     }
 
+    /* ── FORM ── */
     label {
       display: block;
-      font-size: 0.83rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-      margin-top: 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+      margin: 14px 0 5px;
     }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="date"],
-    input[type="file"] {
+    input[type="text"], input[type="email"], input[type="date"], input[type="file"] {
       width: 100%;
       padding: 10px 12px;
-      border: 1.5px solid var(--gray-border);
+      border: 1.5px solid var(--border);
       border-radius: 6px;
-      font-size: 0.95rem;
+      font-size: 0.93rem;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.18s;
     }
-
     input:focus { border-color: var(--red); }
 
     .btn {
       display: block;
       width: 100%;
-      margin-top: 22px;
-      padding: 12px;
+      margin-top: 18px;
+      padding: 11px;
       background: var(--red);
       color: var(--white);
       border: none;
       border-radius: 6px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s;
-      letter-spacing: 0.03em;
+      transition: background 0.18s;
     }
-
     .btn:hover { background: var(--red-dark); }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
-
-    .status {
-      margin-top: 16px;
-      padding: 12px 14px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      display: none;
-    }
-
-    .status.success { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; display: block; }
-    .status.error   { background: #fdf2f2; color: var(--red-dark); border: 1px solid #f5c6cb; display: block; }
-    .status.info    { background: #eaf4fb; color: #1a5276; border: 1px solid #aed6f1; display: block; }
-
-    /* Webcam */
-    .cam-wrap {
-      position: relative;
-      background: #111;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-top: 14px;
-      aspect-ratio: 4/3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #video { width: 100%; display: block; }
-    #canvas { display: none; }
-
-    .cam-placeholder {
-      color: #aaa;
-      font-size: 0.9rem;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .cam-controls { display: flex; gap: 10px; margin-top: 10px; }
-    .cam-controls .btn { margin-top: 0; flex: 1; }
     .btn-outline {
       background: var(--white);
       color: var(--red);
       border: 2px solid var(--red);
     }
-    .btn-outline:hover { background: #fef5f5; }
+    .btn-outline:hover { background: #fef9f9; }
+    .btn-sm {
+      display: inline-block;
+      width: auto;
+      padding: 7px 16px;
+      font-size: 0.85rem;
+      margin-top: 0;
+    }
 
-    /* Records table */
-    .table-wrap { overflow-x: auto; margin-top: 16px; }
+    .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+    .btn-row .btn { margin-top: 0; }
 
+    /* ── STATUS ── */
+    .status {
+      margin-top: 14px;
+      padding: 11px 14px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      display: none;
+      line-height: 1.5;
+    }
+    .status.success { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); display: block; }
+    .status.error   { background: var(--red-light); color: var(--red-dark); border: 1px solid #f5b7b1; display: block; }
+    .status.info    { background: #eaf4fb; color: #1a5276; border: 1px solid #aed6f1; display: block; }
+
+    /* ── WEBCAM ── */
+    .cam-wrap {
+      background: #111;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 12px;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .cam-wrap video { width: 100%; display: block; }
+    .cam-placeholder { color: #aaa; font-size: 0.88rem; text-align: center; padding: 20px; }
+    canvas { display: none; }
+
+    .divider { text-align: center; color: var(--muted); font-size: 0.8rem; margin: 14px 0 4px; }
+
+    /* ── ATTENDANCE TABLE ── */
+    .session-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .session-bar h2 { margin: 0; padding: 0; border: none; font-size: 1rem; color: var(--red); font-weight: 700; }
+
+    .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .stat-box {
+      flex: 1;
+      min-width: 90px;
+      background: var(--gray);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .stat-box .num { font-size: 1.6rem; font-weight: 800; color: var(--red); }
+    .stat-box .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; font-weight: 600; text-transform: uppercase; }
+
+    .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
     th {
       background: var(--red);
@@ -187,41 +198,67 @@
       padding: 10px 12px;
       text-align: left;
       font-weight: 600;
+      white-space: nowrap;
     }
-    td { padding: 9px 12px; border-bottom: 1px solid var(--gray-border); }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
-    tr:nth-child(even) td { background: #fafafa; }
+    tr:hover td { background: #fafafa; }
 
     .badge {
       display: inline-block;
-      padding: 2px 8px;
+      padding: 3px 10px;
       border-radius: 99px;
       font-size: 0.78rem;
       font-weight: 700;
-      background: #eafaf1;
-      color: #1e8449;
+    }
+    .badge-present { background: var(--green-bg); color: var(--green); }
+    .badge-absent  { background: #fdf2f2; color: #c0392b; }
+
+    .time-cell { color: var(--muted); font-size: 0.82rem; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
+    /* ── SPINNER ── */
     .spinner {
       display: inline-block;
-      width: 16px; height: 16px;
-      border: 2px solid #fff;
-      border-top-color: transparent;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       vertical-align: middle;
       margin-right: 6px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── SCAN OVERLAY on checkin ── */
+    .scan-ring {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px; height: 140px;
+      border: 3px solid var(--red);
+      border-radius: 50%;
+      opacity: 0.6;
+      pointer-events: none;
+      display: none;
+    }
+    .cam-wrap.active .scan-ring { display: block; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:0.4;transform:translate(-50%,-50%) scale(1)} 50%{opacity:0.9;transform:translate(-50%,-50%) scale(1.08)} }
   </style>
 </head>
 <body>
 
 <header>
-  <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+  <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
     <circle cx="18" cy="18" r="18" fill="white" fill-opacity="0.15"/>
     <circle cx="18" cy="13" r="5" fill="white"/>
-    <path d="M8 28c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <path d="M8 28c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
   </svg>
   <div>
     <h1>Smart Attendance System</h1>
@@ -230,67 +267,106 @@
 </header>
 
 <nav>
-  <button class="active" onclick="switchTab('register', this)">Register</button>
-  <button onclick="switchTab('checkin', this)">Check In</button>
-  <button onclick="switchTab('records', this)">Records</button>
+  <button class="active" onclick="switchTab('register', this)">&#43; Register</button>
+  <button onclick="switchTab('checkin', this)">&#128247; Check In</button>
+  <button onclick="switchTab('attendance', this)">&#128203; Attendance</button>
 </nav>
 
 <main>
 
-  <!-- TAB 1: REGISTER -->
+  <!-- ══════════════════ TAB 1: REGISTER ══════════════════ -->
   <div id="tab-register" class="tab active">
     <div class="card">
-      <h2>Register Student</h2>
+      <h2>Register New Student</h2>
+
       <label>Student ID</label>
       <input type="text" id="reg-id" placeholder="e.g. 2023-001" />
+
       <label>Full Name</label>
       <input type="text" id="reg-name" placeholder="e.g. Juan dela Cruz" />
+
       <label>Email</label>
       <input type="email" id="reg-email" placeholder="e.g. juan@example.com" />
-      <label>Photo</label>
-      <input type="file" id="reg-photo" accept="image/*" />
+
+      <label>Face Photo — Webcam</label>
+      <div class="cam-wrap" id="reg-cam-wrap">
+        <video id="reg-video" autoplay playsinline style="display:none;width:100%;"></video>
+        <div class="cam-placeholder" id="reg-cam-placeholder">Click "Start Camera" to capture face</div>
+      </div>
+      <canvas id="reg-canvas"></canvas>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="startRegCam()">Start Camera</button>
+        <button class="btn" id="reg-snap-btn" onclick="snapRegPhoto()" disabled>Capture Photo</button>
+      </div>
+      <div id="reg-preview-wrap" style="display:none; margin-top:10px;">
+        <img id="reg-preview" style="width:100%;border-radius:6px;border:2px solid var(--green-border);" />
+        <p style="font-size:0.8rem;color:var(--green);margin-top:4px;">✓ Photo captured — ready to register</p>
+      </div>
+
+      <div class="divider">— or upload a photo —</div>
+      <input type="file" id="reg-photo" accept="image/*" onchange="previewUpload()" />
+
       <button class="btn" id="reg-btn" onclick="registerStudent()">Register Student</button>
       <div class="status" id="reg-status"></div>
     </div>
   </div>
 
-  <!-- TAB 2: CHECK IN -->
+  <!-- ══════════════════ TAB 2: CHECK IN ══════════════════ -->
   <div id="tab-checkin" class="tab">
     <div class="card">
       <h2>Face Check-In</h2>
-      <div class="cam-wrap">
-        <video id="video" autoplay playsinline></video>
-        <div class="cam-placeholder" id="cam-placeholder">Camera not started</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:4px;">Start the camera, point at your face, then hit Scan.</p>
+
+      <div class="cam-wrap" id="checkin-cam-wrap">
+        <video id="checkin-video" autoplay playsinline style="display:none;width:100%;"></video>
+        <div class="cam-placeholder" id="checkin-placeholder">Camera not started</div>
+        <div class="scan-ring" id="scan-ring"></div>
       </div>
-      <canvas id="canvas"></canvas>
-      <div class="cam-controls">
-        <button class="btn btn-outline" onclick="startCamera()">Start Camera</button>
-        <button class="btn" id="snap-btn" onclick="snapAndCheckin()" disabled>Capture &amp; Check In</button>
+      <canvas id="checkin-canvas"></canvas>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="startCheckinCam()">Start Camera</button>
+        <button class="btn" id="checkin-snap-btn" onclick="snapAndCheckin()" disabled>Scan Face</button>
       </div>
-      <div style="margin-top:14px; text-align:center; color:var(--text-muted); font-size:0.85rem;">— or upload a photo —</div>
-      <input type="file" id="checkin-photo" accept="image/*" style="margin-top:10px;" onchange="uploadAndCheckin()" />
+
+      <div class="divider">— or upload a photo —</div>
+      <input type="file" id="checkin-photo" accept="image/*" onchange="uploadAndCheckin()" />
+
       <div class="status" id="checkin-status"></div>
     </div>
   </div>
 
-  <!-- TAB 3: RECORDS -->
-  <div id="tab-records" class="tab">
+  <!-- ══════════════════ TAB 3: ATTENDANCE ══════════════════ -->
+  <div id="tab-attendance" class="tab">
     <div class="card">
-      <h2>Attendance Records</h2>
-      <label>Student ID</label>
-      <input type="text" id="rec-id" placeholder="e.g. 2023-001" />
-      <label>From</label>
-      <input type="date" id="rec-from" />
-      <label>To</label>
-      <input type="date" id="rec-to" />
-      <button class="btn" id="rec-btn" onclick="fetchRecords()">Search Records</button>
-      <div class="status" id="rec-status"></div>
-      <div class="table-wrap" id="rec-table-wrap" style="display:none;">
+      <div class="session-bar">
+        <h2>Class Attendance</h2>
+        <button class="btn btn-sm" onclick="loadAttendance()">&#8635; Refresh</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat-box"><div class="num" id="stat-total">—</div><div class="lbl">Enrolled</div></div>
+        <div class="stat-box"><div class="num" id="stat-present" style="color:var(--green)">—</div><div class="lbl">Present Today</div></div>
+        <div class="stat-box"><div class="num" id="stat-absent">—</div><div class="lbl">Absent</div></div>
+      </div>
+
+      <div class="table-wrap">
         <table>
-          <thead><tr><th>#</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
-          <tbody id="rec-tbody"></tbody>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+            </tr>
+          </thead>
+          <tbody id="att-tbody">
+            <tr><td colspan="5"><div class="empty-state">Loading...</div></td></tr>
+          </tbody>
         </table>
       </div>
+      <div class="status" id="att-status"></div>
     </div>
   </div>
 
@@ -299,11 +375,13 @@
 <script>
   const API = 'https://o1z930ez5d.execute-api.ap-southeast-1.amazonaws.com/prod';
 
+  // ── UTILS ──────────────────────────────────────────────────────────────────
   function switchTab(name, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     btn.classList.add('active');
+    if (name === 'attendance') loadAttendance();
   }
 
   function setStatus(id, msg, type) {
@@ -321,148 +399,234 @@
     });
   }
 
-  // ── REGISTER ────────────────────────────────────────────────────────────────
+  function today() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function fmtTime(isoStr) {
+    return new Date(isoStr).toLocaleTimeString('en-PH', { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ── REGISTER WEBCAM ────────────────────────────────────────────────────────
+  let regStream = null;
+  let regPhotoB64 = null;
+
+  async function startRegCam() {
+    try {
+      regStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      const video = document.getElementById('reg-video');
+      video.srcObject = regStream;
+      video.style.display = 'block';
+      document.getElementById('reg-cam-placeholder').style.display = 'none';
+      document.getElementById('reg-snap-btn').disabled = false;
+      document.getElementById('reg-preview-wrap').style.display = 'none';
+      regPhotoB64 = null;
+    } catch {
+      setStatus('reg-status', 'Camera access denied — use file upload instead.', 'error');
+    }
+  }
+
+  function snapRegPhoto() {
+    const video  = document.getElementById('reg-video');
+    const canvas = document.getElementById('reg-canvas');
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    regPhotoB64 = canvas.toDataURL('image/jpeg').split(',')[1];
+
+    // Stop camera, show preview
+    regStream && regStream.getTracks().forEach(t => t.stop());
+    const preview = document.getElementById('reg-preview');
+    preview.src = canvas.toDataURL('image/jpeg');
+    document.getElementById('reg-preview-wrap').style.display = 'block';
+    document.getElementById('reg-video').style.display = 'none';
+    document.getElementById('reg-cam-placeholder').style.display = 'flex';
+    document.getElementById('reg-cam-placeholder').textContent = '✓ Photo captured';
+    document.getElementById('reg-snap-btn').disabled = true;
+    // Clear file input so captured photo takes priority
+    document.getElementById('reg-photo').value = '';
+  }
+
+  function previewUpload() {
+    regPhotoB64 = null; // will be read fresh on submit
+  }
+
+  // ── REGISTER SUBMIT ────────────────────────────────────────────────────────
   async function registerStudent() {
     const id    = document.getElementById('reg-id').value.trim();
     const name  = document.getElementById('reg-name').value.trim();
     const email = document.getElementById('reg-email').value.trim();
     const file  = document.getElementById('reg-photo').files[0];
 
-    if (!id || !name || !email || !file) {
-      return setStatus('reg-status', 'Please fill in all fields and select a photo.', 'error');
+    if (!id || !name || !email) {
+      return setStatus('reg-status', 'Please fill in Student ID, Name, and Email.', 'error');
+    }
+    if (!regPhotoB64 && !file) {
+      return setStatus('reg-status', 'Please capture or upload a photo.', 'error');
     }
 
     const btn = document.getElementById('reg-btn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span>Registering...';
-    setStatus('reg-status', 'Uploading and processing...', 'info');
+    setStatus('reg-status', 'Processing photo and registering face...', 'info');
 
     try {
-      const photoBase64 = await toBase64(file);
-      const res = await fetch(`${API}/register`, {
+      const photoBase64 = regPhotoB64 || await toBase64(file);
+      const res  = await fetch(`${API}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ studentId: id, name, email, photoBase64 }),
       });
       const data = await res.json();
       if (res.ok) {
-        setStatus('reg-status', `✓ ${name} registered successfully! Face ID: ${data.faceId}`, 'success');
+        setStatus('reg-status', `✓ ${name} registered successfully!`, 'success');
+        // Reset form
+        ['reg-id','reg-name','reg-email'].forEach(i => document.getElementById(i).value = '');
+        document.getElementById('reg-photo').value = '';
+        document.getElementById('reg-preview-wrap').style.display = 'none';
+        regPhotoB64 = null;
       } else {
         setStatus('reg-status', `Error: ${data.error}`, 'error');
       }
-    } catch (e) {
-      setStatus('reg-status', 'Network error. Check console.', 'error');
+    } catch {
+      setStatus('reg-status', 'Network error. Please try again.', 'error');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Register Student';
     }
   }
 
-  // ── CAMERA ──────────────────────────────────────────────────────────────────
-  let stream = null;
+  // ── CHECKIN WEBCAM ─────────────────────────────────────────────────────────
+  let checkinStream = null;
 
-  async function startCamera() {
+  async function startCheckinCam() {
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      const video = document.getElementById('video');
-      video.srcObject = stream;
-      document.getElementById('cam-placeholder').style.display = 'none';
+      checkinStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      const video = document.getElementById('checkin-video');
+      video.srcObject = checkinStream;
       video.style.display = 'block';
-      document.getElementById('snap-btn').disabled = false;
-    } catch (e) {
-      setStatus('checkin-status', 'Camera access denied. Use file upload instead.', 'error');
+      document.getElementById('checkin-placeholder').style.display = 'none';
+      document.getElementById('checkin-snap-btn').disabled = false;
+    } catch {
+      setStatus('checkin-status', 'Camera access denied — use file upload instead.', 'error');
     }
   }
 
   async function snapAndCheckin() {
-    const video  = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
+    const video  = document.getElementById('checkin-video');
+    const canvas = document.getElementById('checkin-canvas');
     canvas.width  = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext('2d').drawImage(video, 0, 0);
-    const photoBase64 = canvas.toDataURL('image/jpeg').split(',')[1];
-    await doCheckin(photoBase64);
+    await doCheckin(canvas.toDataURL('image/jpeg').split(',')[1]);
   }
 
   async function uploadAndCheckin() {
     const file = document.getElementById('checkin-photo').files[0];
     if (!file) return;
-    const photoBase64 = await toBase64(file);
-    await doCheckin(photoBase64);
+    await doCheckin(await toBase64(file));
   }
 
   async function doCheckin(photoBase64) {
-    const btn = document.getElementById('snap-btn');
+    const btn = document.getElementById('checkin-snap-btn');
     btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Scanning...';
+    document.getElementById('checkin-cam-wrap').classList.add('active');
     setStatus('checkin-status', 'Identifying face...', 'info');
 
     try {
-      const res = await fetch(`${API}/checkin`, {
+      const res  = await fetch(`${API}/checkin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ photoBase64 }),
       });
       const data = await res.json();
+      document.getElementById('checkin-cam-wrap').classList.remove('active');
+
       if (res.ok && data.matched) {
-        const ts = new Date(data.timestamp).toLocaleString('en-PH', { timeZone: 'Asia/Manila' });
-        setStatus('checkin-status', `✓ Welcome, ${data.name}! Attendance recorded at ${ts}. Confirmation email sent.`, 'success');
+        const time = fmtTime(data.timestamp);
+        setStatus('checkin-status', `✓ Welcome, ${data.name}! Marked present at ${time}. Confirmation email sent.`, 'success');
       } else {
         setStatus('checkin-status', data.error || 'Face not recognized. Please register first.', 'error');
       }
-    } catch (e) {
-      setStatus('checkin-status', 'Network error. Check console.', 'error');
+    } catch {
+      document.getElementById('checkin-cam-wrap').classList.remove('active');
+      setStatus('checkin-status', 'Network error. Please try again.', 'error');
     } finally {
       btn.disabled = false;
+      btn.textContent = 'Scan Face';
     }
   }
 
-  // ── RECORDS ─────────────────────────────────────────────────────────────────
-  async function fetchRecords() {
-    const id   = document.getElementById('rec-id').value.trim();
-    const from = document.getElementById('rec-from').value;
-    const to   = document.getElementById('rec-to').value;
-
-    if (!id || !from || !to) {
-      return setStatus('rec-status', 'Please fill in Student ID and both dates.', 'error');
-    }
-
-    const btn = document.getElementById('rec-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Searching...';
-    document.getElementById('rec-table-wrap').style.display = 'none';
-    setStatus('rec-status', 'Fetching records...', 'info');
+  // ── ATTENDANCE TABLE ───────────────────────────────────────────────────────
+  async function loadAttendance() {
+    document.getElementById('att-tbody').innerHTML =
+      '<tr><td colspan="5"><div class="empty-state">Loading...</div></td></tr>';
+    document.getElementById('att-status').className = 'status';
 
     try {
-      const res = await fetch(`${API}/records?studentId=${encodeURIComponent(id)}&from=${from}&to=${to}`);
-      const data = await res.json();
+      // 1. Get all students
+      const studRes  = await fetch(`${API}/students`);
 
-      if (res.status === 404 || !data.records?.length) {
-        setStatus('rec-status', 'No attendance records found for that range.', 'info');
-      } else if (res.ok) {
-        setStatus('rec-status', `Found ${data.count} record(s).`, 'success');
-        const tbody = document.getElementById('rec-tbody');
-        tbody.innerHTML = data.records.map((r, i) => {
-          const dt = new Date(r.timestamp);
-          const date = dt.toLocaleDateString('en-PH', { timeZone: 'Asia/Manila' });
-          const time = dt.toLocaleTimeString('en-PH', { timeZone: 'Asia/Manila' });
-          return `<tr>
-            <td>${i + 1}</td>
-            <td>${date}</td>
-            <td>${time}</td>
-            <td><span class="badge">${r.status}</span></td>
-          </tr>`;
-        }).join('');
-        document.getElementById('rec-table-wrap').style.display = 'block';
-      } else {
-        setStatus('rec-status', `Error: ${data.error}`, 'error');
+      // Fallback: if /students doesn't exist yet, scan via records for today
+      // We'll query each student's record for today using a known approach:
+      // Scan AttendanceLogs for today and cross-reference Students table.
+      // For now we use the records endpoint per student isn't scalable,
+      // so we fetch today's logs directly.
+      const logsRes  = await fetch(`${API}/records?from=${today()}&to=${today()}`);
+      const logsData = await logsRes.json();
+
+      const presentMap = {}; // studentId → {name, timestamp}
+      if (logsRes.ok && logsData.records) {
+        logsData.records.forEach(r => {
+          if (!presentMap[r.studentId]) {
+            presentMap[r.studentId] = { name: r.name, timestamp: r.timestamp };
+          }
+        });
       }
+
+      // Build rows from present students (today's check-ins)
+      const presentList = Object.entries(presentMap);
+
+      // Stats
+      const presentCount = presentList.length;
+      document.getElementById('stat-present').textContent = presentCount;
+      document.getElementById('stat-total').textContent = '—';
+      document.getElementById('stat-absent').textContent = '—';
+
+      if (presentList.length === 0) {
+        document.getElementById('att-tbody').innerHTML =
+          '<tr><td colspan="5"><div class="empty-state">No check-ins recorded today yet.</div></td></tr>';
+        return;
+      }
+
+      // Sort by time
+      presentList.sort((a, b) => new Date(a[1].timestamp) - new Date(b[1].timestamp));
+
+      document.getElementById('att-tbody').innerHTML = presentList.map(([sid, info], i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td style="font-family:monospace;font-size:0.85rem;">${sid}</td>
+          <td>${info.name}</td>
+          <td><span class="badge badge-present">Present</span></td>
+          <td class="time-cell">${fmtTime(info.timestamp)}</td>
+        </tr>
+      `).join('');
+
     } catch (e) {
-      setStatus('rec-status', 'Network error. Check console.', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Search Records';
+      setStatus('att-status', 'Failed to load attendance data.', 'error');
     }
   }
+
+  // Auto-load attendance on page load
+  window.addEventListener('load', () => {
+    // Set default dates
+    const t = today();
+    const recFrom = document.getElementById('rec-from');
+    const recTo   = document.getElementById('rec-to');
+    if (recFrom) { recFrom.value = t; }
+    if (recTo)   { recTo.value   = t; }
+  });
 </script>
 </body>
 </html>

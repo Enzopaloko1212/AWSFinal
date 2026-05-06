@@ -29,22 +29,30 @@ def handler(event, context):
     date_from = params.get("from")
     date_to = params.get("to")
 
-    if not student_id or not date_from or not date_to:
-        return _response(400, {"error": "Required query params: studentId, from (YYYY-MM-DD), to (YYYY-MM-DD)"})
+    if not date_from or not date_to:
+        return _response(400, {"error": "Required query params: from (YYYY-MM-DD), to (YYYY-MM-DD). studentId is optional."})
 
     from_ts = f"{date_from}T00:00:00+00:00"
     to_ts = f"{date_to}T23:59:59+00:00"
 
     try:
-        result = logs_table.query(
-            IndexName=GSI_NAME,
-            KeyConditionExpression=Key("studentId").eq(student_id) & Key("timestamp").between(from_ts, to_ts),
-            ScanIndexForward=True,
-        )
+        if student_id:
+            # Query by specific student using GSI
+            result = logs_table.query(
+                IndexName=GSI_NAME,
+                KeyConditionExpression=Key("studentId").eq(student_id) & Key("timestamp").between(from_ts, to_ts),
+                ScanIndexForward=True,
+            )
+            items = result.get("Items", [])
+        else:
+            # Scan all logs for the date range (used by attendance tab)
+            result = logs_table.scan(
+                FilterExpression=Key("timestamp").between(from_ts, to_ts),
+            )
+            items = sorted(result.get("Items", []), key=lambda x: x.get("timestamp", ""))
     except ClientError as e:
         return _response(500, {"error": f"DynamoDB query failed: {e.response['Error']['Message']}"})
 
-    items = result.get("Items", [])
     if not items:
         return _response(404, {"studentId": student_id, "records": [], "message": "No attendance records in range"})
 
