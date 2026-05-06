@@ -23,7 +23,7 @@
 
     body { font-family: 'Segoe UI', sans-serif; background: var(--gray); color: var(--text); min-height: 100dvh; }
 
-    /* ── HEADER ── */
+    /* HEADER */
     header {
       background: var(--red);
       color: var(--white);
@@ -36,7 +36,7 @@
     header h1 { font-size: 1.25rem; font-weight: 700; }
     header p  { font-size: 0.78rem; opacity: 0.8; margin-top: 2px; }
 
-    /* ── NAV TABS ── */
+    /* NAV */
     nav {
       background: var(--white);
       display: flex;
@@ -60,7 +60,7 @@
     nav button.active { color: var(--red); border-bottom-color: var(--red); background: #fef9f9; }
     nav button:hover:not(.active) { background: var(--gray); }
 
-    /* ── LAYOUT ── */
+    /* LAYOUT */
     main { max-width: 620px; margin: 28px auto; padding: 0 16px 60px; }
     .tab { display: none; }
     .tab.active { display: block; }
@@ -81,7 +81,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    /* ── FORM ── */
+    /* FORM */
     label {
       display: block;
       font-size: 0.78rem;
@@ -91,7 +91,10 @@
       letter-spacing: 0.05em;
       margin: 14px 0 5px;
     }
-    input[type="text"], input[type="email"], input[type="date"], input[type="file"] {
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    input[type="file"] {
       width: 100%;
       padding: 10px 12px;
       border: 1.5px solid var(--border);
@@ -131,11 +134,10 @@
       font-size: 0.85rem;
       margin-top: 0;
     }
-
     .btn-row { display: flex; gap: 10px; margin-top: 12px; }
     .btn-row .btn { margin-top: 0; }
 
-    /* ── STATUS ── */
+    /* STATUS */
     .status {
       margin-top: 14px;
       padding: 11px 14px;
@@ -148,7 +150,7 @@
     .status.error   { background: var(--red-light); color: var(--red-dark); border: 1px solid #f5b7b1; display: block; }
     .status.info    { background: #eaf4fb; color: #1a5276; border: 1px solid #aed6f1; display: block; }
 
-    /* ── WEBCAM ── */
+    /* WEBCAM */
     .cam-wrap {
       background: #111;
       border-radius: 8px;
@@ -161,12 +163,37 @@
       position: relative;
     }
     .cam-wrap video { width: 100%; display: block; }
-    .cam-placeholder { color: #aaa; font-size: 0.88rem; text-align: center; padding: 20px; }
+    .cam-placeholder {
+      color: #aaa;
+      font-size: 0.88rem;
+      text-align: center;
+      padding: 20px;
+    }
     canvas { display: none; }
-
     .divider { text-align: center; color: var(--muted); font-size: 0.8rem; margin: 14px 0 4px; }
 
-    /* ── ATTENDANCE TABLE ── */
+    /* Scan ring animation */
+    .scan-ring {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px; height: 140px;
+      border: 3px solid var(--red);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .cam-wrap.scanning .scan-ring {
+      opacity: 0.7;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.5; }
+      50%      { transform: translate(-50%,-50%) scale(1.1); opacity: 0.9; }
+    }
+
+    /* ATTENDANCE */
     .session-bar {
       display: flex;
       align-items: center;
@@ -175,12 +202,11 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-    .session-bar h2 { margin: 0; padding: 0; border: none; font-size: 1rem; color: var(--red); font-weight: 700; }
+    .session-bar h2 { margin: 0; padding: 0; border: none; }
 
-    .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .stats { display: flex; gap: 12px; margin-bottom: 16px; }
     .stat-box {
       flex: 1;
-      min-width: 90px;
       background: var(--gray);
       border-radius: 8px;
       padding: 12px;
@@ -188,7 +214,8 @@
       border: 1px solid var(--border);
     }
     .stat-box .num { font-size: 1.6rem; font-weight: 800; color: var(--red); }
-    .stat-box .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; font-weight: 600; text-transform: uppercase; }
+    .stat-box .num.green { color: var(--green); }
+    .stat-box .lbl { font-size: 0.72rem; color: var(--muted); margin-top: 2px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
@@ -212,22 +239,16 @@
       font-weight: 700;
     }
     .badge-present { background: var(--green-bg); color: var(--green); }
-    .badge-absent  { background: #fdf2f2; color: #c0392b; }
-
+    .badge-absent  { background: #fdf2f2; color: var(--red); }
     .time-cell { color: var(--muted); font-size: 0.82rem; }
 
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
+    .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 0.9rem; }
 
-    /* ── SPINNER ── */
+    /* SPINNER */
     .spinner {
       display: inline-block;
       width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,0.5);
+      border: 2px solid rgba(255,255,255,0.4);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
@@ -235,21 +256,6 @@
       margin-right: 6px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── SCAN OVERLAY on checkin ── */
-    .scan-ring {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 140px; height: 140px;
-      border: 3px solid var(--red);
-      border-radius: 50%;
-      opacity: 0.6;
-      pointer-events: none;
-      display: none;
-    }
-    .cam-wrap.active .scan-ring { display: block; animation: pulse 1.5s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:0.4;transform:translate(-50%,-50%) scale(1)} 50%{opacity:0.9;transform:translate(-50%,-50%) scale(1.08)} }
   </style>
 </head>
 <body>
@@ -274,7 +280,7 @@
 
 <main>
 
-  <!-- ══════════════════ TAB 1: REGISTER ══════════════════ -->
+  <!-- TAB 1: REGISTER -->
   <div id="tab-register" class="tab active">
     <div class="card">
       <h2>Register New Student</h2>
@@ -294,13 +300,15 @@
         <div class="cam-placeholder" id="reg-cam-placeholder">Click "Start Camera" to capture face</div>
       </div>
       <canvas id="reg-canvas"></canvas>
+
       <div class="btn-row">
         <button class="btn btn-outline" onclick="startRegCam()">Start Camera</button>
         <button class="btn" id="reg-snap-btn" onclick="snapRegPhoto()" disabled>Capture Photo</button>
       </div>
+
       <div id="reg-preview-wrap" style="display:none; margin-top:10px;">
-        <img id="reg-preview" style="width:100%;border-radius:6px;border:2px solid var(--green-border);" />
-        <p style="font-size:0.8rem;color:var(--green);margin-top:4px;">✓ Photo captured — ready to register</p>
+        <img id="reg-preview" style="width:100%;border-radius:6px;border:2px solid var(--green-border);" alt="Captured photo preview" />
+        <p style="font-size:0.8rem;color:var(--green);margin-top:4px;">&#10003; Photo captured — ready to register</p>
       </div>
 
       <div class="divider">— or upload a photo —</div>
@@ -311,7 +319,7 @@
     </div>
   </div>
 
-  <!-- ══════════════════ TAB 2: CHECK IN ══════════════════ -->
+  <!-- TAB 2: CHECK IN -->
   <div id="tab-checkin" class="tab">
     <div class="card">
       <h2>Face Check-In</h2>
@@ -320,7 +328,7 @@
       <div class="cam-wrap" id="checkin-cam-wrap">
         <video id="checkin-video" autoplay playsinline style="display:none;width:100%;"></video>
         <div class="cam-placeholder" id="checkin-placeholder">Camera not started</div>
-        <div class="scan-ring" id="scan-ring"></div>
+        <div class="scan-ring"></div>
       </div>
       <canvas id="checkin-canvas"></canvas>
 
@@ -336,18 +344,27 @@
     </div>
   </div>
 
-  <!-- ══════════════════ TAB 3: ATTENDANCE ══════════════════ -->
+  <!-- TAB 3: ATTENDANCE -->
   <div id="tab-attendance" class="tab">
     <div class="card">
       <div class="session-bar">
-        <h2>Class Attendance</h2>
+        <h2 style="color:var(--red);font-weight:700;">Class Attendance</h2>
         <button class="btn btn-sm" onclick="loadAttendance()">&#8635; Refresh</button>
       </div>
 
       <div class="stats">
-        <div class="stat-box"><div class="num" id="stat-total">—</div><div class="lbl">Enrolled</div></div>
-        <div class="stat-box"><div class="num" id="stat-present" style="color:var(--green)">—</div><div class="lbl">Present Today</div></div>
-        <div class="stat-box"><div class="num" id="stat-absent">—</div><div class="lbl">Absent</div></div>
+        <div class="stat-box">
+          <div class="num" id="stat-total">—</div>
+          <div class="lbl">Enrolled</div>
+        </div>
+        <div class="stat-box">
+          <div class="num green" id="stat-present">—</div>
+          <div class="lbl">Present Today</div>
+        </div>
+        <div class="stat-box">
+          <div class="num" id="stat-absent">—</div>
+          <div class="lbl">Absent</div>
+        </div>
       </div>
 
       <div class="table-wrap">
@@ -362,7 +379,7 @@
             </tr>
           </thead>
           <tbody id="att-tbody">
-            <tr><td colspan="5"><div class="empty-state">Loading...</div></td></tr>
+            <tr><td colspan="5"><div class="empty-state">Click Refresh to load.</div></td></tr>
           </tbody>
         </table>
       </div>
@@ -372,261 +389,6 @@
 
 </main>
 
-<script>
-  const API = 'https://o1z930ez5d.execute-api.ap-southeast-1.amazonaws.com/prod';
-
-  // ── UTILS ──────────────────────────────────────────────────────────────────
-  function switchTab(name, btn) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    btn.classList.add('active');
-    if (name === 'attendance') loadAttendance();
-  }
-
-  function setStatus(id, msg, type) {
-    const el = document.getElementById(id);
-    el.textContent = msg;
-    el.className = 'status ' + type;
-  }
-
-  function toBase64(file) {
-    return new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onload = () => res(r.result.split(',')[1]);
-      r.onerror = rej;
-      r.readAsDataURL(file);
-    });
-  }
-
-  function today() {
-    return new Date().toISOString().slice(0, 10);
-  }
-
-  function fmtTime(isoStr) {
-    return new Date(isoStr).toLocaleTimeString('en-PH', { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit' });
-  }
-
-  // ── REGISTER WEBCAM ────────────────────────────────────────────────────────
-  let regStream = null;
-  let regPhotoB64 = null;
-
-  async function startRegCam() {
-    try {
-      regStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      const video = document.getElementById('reg-video');
-      video.srcObject = regStream;
-      video.style.display = 'block';
-      document.getElementById('reg-cam-placeholder').style.display = 'none';
-      document.getElementById('reg-snap-btn').disabled = false;
-      document.getElementById('reg-preview-wrap').style.display = 'none';
-      regPhotoB64 = null;
-    } catch {
-      setStatus('reg-status', 'Camera access denied — use file upload instead.', 'error');
-    }
-  }
-
-  function snapRegPhoto() {
-    const video  = document.getElementById('reg-video');
-    const canvas = document.getElementById('reg-canvas');
-    canvas.width  = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    regPhotoB64 = canvas.toDataURL('image/jpeg').split(',')[1];
-
-    // Stop camera, show preview
-    regStream && regStream.getTracks().forEach(t => t.stop());
-    const preview = document.getElementById('reg-preview');
-    preview.src = canvas.toDataURL('image/jpeg');
-    document.getElementById('reg-preview-wrap').style.display = 'block';
-    document.getElementById('reg-video').style.display = 'none';
-    document.getElementById('reg-cam-placeholder').style.display = 'flex';
-    document.getElementById('reg-cam-placeholder').textContent = '✓ Photo captured';
-    document.getElementById('reg-snap-btn').disabled = true;
-    // Clear file input so captured photo takes priority
-    document.getElementById('reg-photo').value = '';
-  }
-
-  function previewUpload() {
-    regPhotoB64 = null; // will be read fresh on submit
-  }
-
-  // ── REGISTER SUBMIT ────────────────────────────────────────────────────────
-  async function registerStudent() {
-    const id    = document.getElementById('reg-id').value.trim();
-    const name  = document.getElementById('reg-name').value.trim();
-    const email = document.getElementById('reg-email').value.trim();
-    const file  = document.getElementById('reg-photo').files[0];
-
-    if (!id || !name || !email) {
-      return setStatus('reg-status', 'Please fill in Student ID, Name, and Email.', 'error');
-    }
-    if (!regPhotoB64 && !file) {
-      return setStatus('reg-status', 'Please capture or upload a photo.', 'error');
-    }
-
-    const btn = document.getElementById('reg-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Registering...';
-    setStatus('reg-status', 'Processing photo and registering face...', 'info');
-
-    try {
-      const photoBase64 = regPhotoB64 || await toBase64(file);
-      const res  = await fetch(`${API}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentId: id, name, email, photoBase64 }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setStatus('reg-status', `✓ ${name} registered successfully!`, 'success');
-        // Reset form
-        ['reg-id','reg-name','reg-email'].forEach(i => document.getElementById(i).value = '');
-        document.getElementById('reg-photo').value = '';
-        document.getElementById('reg-preview-wrap').style.display = 'none';
-        regPhotoB64 = null;
-      } else {
-        setStatus('reg-status', `Error: ${data.error}`, 'error');
-      }
-    } catch {
-      setStatus('reg-status', 'Network error. Please try again.', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Register Student';
-    }
-  }
-
-  // ── CHECKIN WEBCAM ─────────────────────────────────────────────────────────
-  let checkinStream = null;
-
-  async function startCheckinCam() {
-    try {
-      checkinStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      const video = document.getElementById('checkin-video');
-      video.srcObject = checkinStream;
-      video.style.display = 'block';
-      document.getElementById('checkin-placeholder').style.display = 'none';
-      document.getElementById('checkin-snap-btn').disabled = false;
-    } catch {
-      setStatus('checkin-status', 'Camera access denied — use file upload instead.', 'error');
-    }
-  }
-
-  async function snapAndCheckin() {
-    const video  = document.getElementById('checkin-video');
-    const canvas = document.getElementById('checkin-canvas');
-    canvas.width  = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    await doCheckin(canvas.toDataURL('image/jpeg').split(',')[1]);
-  }
-
-  async function uploadAndCheckin() {
-    const file = document.getElementById('checkin-photo').files[0];
-    if (!file) return;
-    await doCheckin(await toBase64(file));
-  }
-
-  async function doCheckin(photoBase64) {
-    const btn = document.getElementById('checkin-snap-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Scanning...';
-    document.getElementById('checkin-cam-wrap').classList.add('active');
-    setStatus('checkin-status', 'Identifying face...', 'info');
-
-    try {
-      const res  = await fetch(`${API}/checkin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ photoBase64 }),
-      });
-      const data = await res.json();
-      document.getElementById('checkin-cam-wrap').classList.remove('active');
-
-      if (res.ok && data.matched) {
-        const time = fmtTime(data.timestamp);
-        setStatus('checkin-status', `✓ Welcome, ${data.name}! Marked present at ${time}. Confirmation email sent.`, 'success');
-      } else {
-        setStatus('checkin-status', data.error || 'Face not recognized. Please register first.', 'error');
-      }
-    } catch {
-      document.getElementById('checkin-cam-wrap').classList.remove('active');
-      setStatus('checkin-status', 'Network error. Please try again.', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Scan Face';
-    }
-  }
-
-  // ── ATTENDANCE TABLE ───────────────────────────────────────────────────────
-  async function loadAttendance() {
-    document.getElementById('att-tbody').innerHTML =
-      '<tr><td colspan="5"><div class="empty-state">Loading...</div></td></tr>';
-    document.getElementById('att-status').className = 'status';
-
-    try {
-      // 1. Get all students
-      const studRes  = await fetch(`${API}/students`);
-
-      // Fallback: if /students doesn't exist yet, scan via records for today
-      // We'll query each student's record for today using a known approach:
-      // Scan AttendanceLogs for today and cross-reference Students table.
-      // For now we use the records endpoint per student isn't scalable,
-      // so we fetch today's logs directly.
-      const logsRes  = await fetch(`${API}/records?from=${today()}&to=${today()}`);
-      const logsData = await logsRes.json();
-
-      const presentMap = {}; // studentId → {name, timestamp}
-      if (logsRes.ok && logsData.records) {
-        logsData.records.forEach(r => {
-          if (!presentMap[r.studentId]) {
-            presentMap[r.studentId] = { name: r.name, timestamp: r.timestamp };
-          }
-        });
-      }
-
-      // Build rows from present students (today's check-ins)
-      const presentList = Object.entries(presentMap);
-
-      // Stats
-      const presentCount = presentList.length;
-      document.getElementById('stat-present').textContent = presentCount;
-      document.getElementById('stat-total').textContent = '—';
-      document.getElementById('stat-absent').textContent = '—';
-
-      if (presentList.length === 0) {
-        document.getElementById('att-tbody').innerHTML =
-          '<tr><td colspan="5"><div class="empty-state">No check-ins recorded today yet.</div></td></tr>';
-        return;
-      }
-
-      // Sort by time
-      presentList.sort((a, b) => new Date(a[1].timestamp) - new Date(b[1].timestamp));
-
-      document.getElementById('att-tbody').innerHTML = presentList.map(([sid, info], i) => `
-        <tr>
-          <td>${i + 1}</td>
-          <td style="font-family:monospace;font-size:0.85rem;">${sid}</td>
-          <td>${info.name}</td>
-          <td><span class="badge badge-present">Present</span></td>
-          <td class="time-cell">${fmtTime(info.timestamp)}</td>
-        </tr>
-      `).join('');
-
-    } catch (e) {
-      setStatus('att-status', 'Failed to load attendance data.', 'error');
-    }
-  }
-
-  // Auto-load attendance on page load
-  window.addEventListener('load', () => {
-    // Set default dates
-    const t = today();
-    const recFrom = document.getElementById('rec-from');
-    const recTo   = document.getElementById('rec-to');
-    if (recFrom) { recFrom.value = t; }
-    if (recTo)   { recTo.value   = t; }
-  });
-</script>
+<script src="app.js"></script>
 </body>
 </html>
