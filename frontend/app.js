@@ -40,10 +40,17 @@ function applyAuthState() {
     if (btn) btn.classList.toggle('hidden', !on);
   };
   show('auth', !loggedIn);
-  show('checkin', true);
-  show('myattendance', role === 'student');
-  show('attendance', role === 'admin');
+  show('checkin', role === 'admin');        // only admin runs the scanner
+  show('myattendance', role === 'student'); // students view their own records
+  show('attendance', role === 'admin');     // admin sees class-wide dashboard
   show('manage', role === 'admin');
+
+  // check-in banner
+  const banner = document.getElementById('checkin-user-banner');
+  if (banner) {
+    banner.style.display = loggedIn ? 'block' : 'none';
+    if (loggedIn) document.getElementById('checkin-user-name').textContent = `${sess.user.name} (${sess.user.userId})`;
+  }
 
   // if currently on a tab no longer visible, jump
   const activeBtn = document.querySelector('nav button.active');
@@ -125,8 +132,10 @@ async function loginWithCreds() {
     const data = await res.json();
     if (res.ok) {
       setSession(data.token, data.user);
-      setStatus('login-status', `✓ Welcome, ${data.user.name}!`, 'success');
       document.getElementById('login-pw').value = '';
+      const target = data.user.role === 'admin' ? 'checkin' : 'myattendance';
+      const targetBtn = document.querySelector(`nav button[data-tab="${target}"]`);
+      switchTab(target, targetBtn);
     } else {
       setStatus('login-status', data.error || 'Login failed.', 'error');
     }
@@ -193,8 +202,10 @@ async function loginWithFace() {
     document.getElementById('login-cam-wrap').classList.remove('scanning');
     if (res.ok) {
       setSession(data.token, data.user);
-      setStatus('login-status', `✓ Welcome, ${data.user.name}!`, 'success');
       stopLoginCam();
+      const target = data.user.role === 'admin' ? 'checkin' : 'myattendance';
+      const targetBtn = document.querySelector(`nav button[data-tab="${target}"]`);
+      switchTab(target, targetBtn);
     } else {
       setStatus('login-status', data.error || 'Face login failed.', 'error');
     }
@@ -503,7 +514,7 @@ window.addEventListener('load', () => {
   // If logged in, jump off the auth tab to checkin
   const sess = getSession();
   if (sess) {
-    const target = sess.user.role === 'admin' ? 'attendance' : 'checkin';
+    const target = sess.user.role === 'admin' ? 'checkin' : 'myattendance';
     const btn = document.querySelector(`nav button[data-tab="${target}"]`);
     if (btn) switchTab(target, btn);
   }
