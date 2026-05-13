@@ -500,19 +500,63 @@
 
   <!-- MANAGE TAB (admin) -->
   <div id="tab-manage" class="tab">
+
+    <!-- Add Student -->
     <div class="card">
-      <h2>User Management</h2>
-      <p style="font-size:0.88rem;color:var(--muted);">All registered users (students + admins).</p>
-      <button class="btn btn-sm" style="margin-top:12px;" onclick="loadAllUsers()">&#8635; Refresh</button>
-      <div class="table-wrap" style="margin-top:14px;">
+      <h2>Add New Student</h2>
+
+      <label>Student ID</label>
+      <input type="text" id="mgmt-id" placeholder="e.g. 2023-001" />
+
+      <label>Full Name</label>
+      <input type="text" id="mgmt-name" placeholder="e.g. Juan dela Cruz" />
+
+      <label>Email</label>
+      <input type="email" id="mgmt-email" placeholder="e.g. juan@example.com" />
+
+      <label>Password</label>
+      <input type="password" id="mgmt-pw" placeholder="Set a password for the student" />
+
+      <label>Face Photo — Webcam</label>
+      <div class="cam-wrap" id="mgmt-cam-wrap">
+        <video id="mgmt-video" autoplay playsinline style="display:none;"></video>
+        <div class="cam-placeholder" id="mgmt-cam-placeholder">Click "Start Camera" to capture face</div>
+      </div>
+      <canvas id="mgmt-canvas"></canvas>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" id="mgmt-cam-toggle" onclick="toggleMgmtCam()">Start Camera</button>
+        <button class="btn" id="mgmt-snap-btn" onclick="snapMgmtPhoto()" disabled>Capture Photo</button>
+      </div>
+
+      <div id="mgmt-preview-wrap" style="display:none; margin-top:10px;">
+        <img id="mgmt-preview" style="width:100%;border-radius:6px;border:2px solid var(--green-border);" alt="Captured preview" />
+        <p style="font-size:0.8rem;color:var(--green);margin-top:4px;">&#10003; Photo captured</p>
+      </div>
+
+      <div class="divider">— or upload a photo —</div>
+      <input type="file" id="mgmt-photo" accept="image/*" onchange="mgmtPreviewUpload()" />
+
+      <button class="btn" id="mgmt-add-btn" onclick="adminAddStudent()">Add Student</button>
+      <div class="status" id="mgmt-add-status"></div>
+    </div>
+
+    <!-- Student Roster -->
+    <div class="card">
+      <div class="session-bar">
+        <h2>Student Roster</h2>
+        <button class="btn btn-sm" onclick="loadAllUsers()">&#8635; Refresh</button>
+      </div>
+      <div class="table-wrap">
         <table>
-          <thead><tr><th>User ID</th><th>Name</th><th>Email</th><th>Role</th></tr></thead>
+          <thead><tr><th>Student ID</th><th>Name</th><th>Email</th></tr></thead>
           <tbody id="manage-tbody">
-            <tr><td colspan="4"><div class="empty-state">Click Refresh to load.</div></td></tr>
+            <tr><td colspan="3"><div class="empty-state">Click Refresh to load.</div></td></tr>
           </tbody>
         </table>
       </div>
     </div>
+
   </div>
 
 </main>

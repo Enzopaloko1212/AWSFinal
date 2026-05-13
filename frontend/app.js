@@ -480,6 +480,102 @@ async function loadMyAttendance() {
   }
 }
 
+// ── ADMIN ADD STUDENT ────────────────────────────────────────────────────────
+
+let mgmtStream = null;
+let mgmtPhotoB64 = null;
+
+function stopMgmtCam() {
+  if (mgmtStream) { mgmtStream.getTracks().forEach(t => t.stop()); mgmtStream = null; }
+  const v = document.getElementById('mgmt-video');
+  v.srcObject = null; v.style.display = 'none';
+  const ph = document.getElementById('mgmt-cam-placeholder');
+  ph.style.display = 'flex';
+  ph.textContent = 'Click "Start Camera" to capture face';
+  document.getElementById('mgmt-snap-btn').disabled = true;
+  document.getElementById('mgmt-cam-toggle').textContent = 'Start Camera';
+}
+
+async function toggleMgmtCam() {
+  if (mgmtStream) { stopMgmtCam(); return; }
+  try {
+    mgmtStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    const v = document.getElementById('mgmt-video');
+    v.srcObject = mgmtStream; v.style.display = 'block';
+    document.getElementById('mgmt-cam-placeholder').style.display = 'none';
+    document.getElementById('mgmt-snap-btn').disabled = false;
+    document.getElementById('mgmt-preview-wrap').style.display = 'none';
+    document.getElementById('mgmt-cam-toggle').textContent = 'Stop Camera';
+    mgmtPhotoB64 = null;
+  } catch {
+    setStatus('mgmt-add-status', 'Camera access denied — use file upload instead.', 'error');
+  }
+}
+
+function snapMgmtPhoto() {
+  const v = document.getElementById('mgmt-video');
+  const c = document.getElementById('mgmt-canvas');
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  c.getContext('2d').drawImage(v, 0, 0);
+  mgmtPhotoB64 = c.toDataURL('image/jpeg').split(',')[1];
+  if (mgmtStream) { mgmtStream.getTracks().forEach(t => t.stop()); mgmtStream = null; }
+  document.getElementById('mgmt-preview').src = c.toDataURL('image/jpeg');
+  document.getElementById('mgmt-preview-wrap').style.display = 'block';
+  document.getElementById('mgmt-video').style.display = 'none';
+  const ph = document.getElementById('mgmt-cam-placeholder');
+  ph.style.display = 'flex'; ph.textContent = '✓ Photo captured';
+  document.getElementById('mgmt-snap-btn').disabled = true;
+  document.getElementById('mgmt-cam-toggle').textContent = 'Start Camera';
+  document.getElementById('mgmt-photo').value = '';
+}
+
+function mgmtPreviewUpload() { mgmtPhotoB64 = null; }
+
+async function adminAddStudent() {
+  const userId   = document.getElementById('mgmt-id').value.trim();
+  const name     = document.getElementById('mgmt-name').value.trim();
+  const email    = document.getElementById('mgmt-email').value.trim();
+  const password = document.getElementById('mgmt-pw').value;
+  const file     = document.getElementById('mgmt-photo').files[0];
+
+  if (!userId || !name || !email || !password) {
+    return setStatus('mgmt-add-status', 'Fill in all fields.', 'error');
+  }
+  if (!mgmtPhotoB64 && !file) {
+    return setStatus('mgmt-add-status', 'Capture or upload a face photo.', 'error');
+  }
+
+  const btn = document.getElementById('mgmt-add-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Adding student...';
+  setStatus('mgmt-add-status', 'Indexing face & creating account...', 'info');
+
+  try {
+    const photoBase64 = mgmtPhotoB64 || await toBase64(file);
+    const res = await fetch(`${API}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, name, email, password, role: 'student', photoBase64 }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setStatus('mgmt-add-status', `✓ ${name} added as student!`, 'success');
+      ['mgmt-id','mgmt-name','mgmt-email','mgmt-pw'].forEach(i => document.getElementById(i).value = '');
+      document.getElementById('mgmt-photo').value = '';
+      document.getElementById('mgmt-preview-wrap').style.display = 'none';
+      mgmtPhotoB64 = null;
+      loadAllUsers();
+    } else {
+      setStatus('mgmt-add-status', `Error: ${data.error}`, 'error');
+    }
+  } catch {
+    setStatus('mgmt-add-status', 'Network error.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Add Student';
+  }
+}
+
 // ── MANAGE USERS (admin) ─────────────────────────────────────────────────────
 
 async function loadAllUsers() {
@@ -499,7 +595,6 @@ async function loadAllUsers() {
         <td style="font-family:monospace;font-size:0.84rem;">${u.studentId}</td>
         <td>${u.name}</td>
         <td>${u.email || '—'}</td>
-        <td><span class="badge badge-student">student</span></td>
       </tr>`).join('');
   } catch {
     document.getElementById('manage-tbody').innerHTML =
