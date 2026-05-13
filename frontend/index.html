@@ -302,7 +302,7 @@
       <canvas id="reg-canvas"></canvas>
 
       <div class="btn-row">
-        <button class="btn btn-outline" onclick="startRegCam()">Start Camera</button>
+        <button class="btn btn-outline" id="reg-cam-toggle" onclick="toggleRegCam()">Start Camera</button>
         <button class="btn" id="reg-snap-btn" onclick="snapRegPhoto()" disabled>Capture Photo</button>
       </div>
 
@@ -333,7 +333,7 @@
       <canvas id="checkin-canvas"></canvas>
 
       <div class="btn-row">
-        <button class="btn btn-outline" onclick="startCheckinCam()">Start Camera</button>
+        <button class="btn btn-outline" id="checkin-cam-toggle" onclick="toggleCheckinCam()">Start Camera</button>
         <button class="btn" id="checkin-snap-btn" onclick="snapAndCheckin()" disabled>Scan Face</button>
       </div>
 

@@ -90,6 +90,8 @@ def handler(event, context):
         }
     )
 
+    email_status = "sent"
+    email_error = None
     try:
         ses.send_email(
             Source=SES_SENDER,
@@ -104,7 +106,11 @@ def handler(event, context):
             },
         )
     except ClientError as e:
-        print(f"SES send failed (non-fatal): {e.response['Error']['Message']}")
+        code = e.response["Error"]["Code"]
+        msg = e.response["Error"]["Message"]
+        email_status = "failed"
+        email_error = f"{code}: {msg}"
+        print(f"SES send failed: {email_error}")
 
     return _response(200, {
         "matched": True,
@@ -112,4 +118,6 @@ def handler(event, context):
         "name": student["name"],
         "timestamp": timestamp,
         "confidence": round(confidence, 2),
+        "email": email_status,
+        "emailError": email_error,
     })

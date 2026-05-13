@@ -40,7 +40,26 @@ function fmtTime(isoStr) {
 let regStream = null;
 let regPhotoB64 = null;
 
-async function startRegCam() {
+function stopRegCam() {
+  if (regStream) {
+    regStream.getTracks().forEach(t => t.stop());
+    regStream = null;
+  }
+  const video = document.getElementById('reg-video');
+  video.srcObject = null;
+  video.style.display = 'none';
+  const placeholder = document.getElementById('reg-cam-placeholder');
+  placeholder.style.display = 'flex';
+  placeholder.textContent = 'Click "Start Camera" to capture face';
+  document.getElementById('reg-snap-btn').disabled = true;
+  document.getElementById('reg-cam-toggle').textContent = 'Start Camera';
+}
+
+async function toggleRegCam() {
+  if (regStream) {
+    stopRegCam();
+    return;
+  }
   try {
     regStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
     const video = document.getElementById('reg-video');
@@ -49,6 +68,7 @@ async function startRegCam() {
     document.getElementById('reg-cam-placeholder').style.display = 'none';
     document.getElementById('reg-snap-btn').disabled = false;
     document.getElementById('reg-preview-wrap').style.display = 'none';
+    document.getElementById('reg-cam-toggle').textContent = 'Stop Camera';
     regPhotoB64 = null;
   } catch {
     setStatus('reg-status', 'Camera access denied — use file upload instead.', 'error');
@@ -63,13 +83,18 @@ function snapRegPhoto() {
   canvas.getContext('2d').drawImage(video, 0, 0);
   regPhotoB64 = canvas.toDataURL('image/jpeg').split(',')[1];
 
-  regStream && regStream.getTracks().forEach(t => t.stop());
+  if (regStream) {
+    regStream.getTracks().forEach(t => t.stop());
+    regStream = null;
+  }
   document.getElementById('reg-preview').src = canvas.toDataURL('image/jpeg');
   document.getElementById('reg-preview-wrap').style.display = 'block';
   document.getElementById('reg-video').style.display = 'none';
-  document.getElementById('reg-cam-placeholder').style.display = 'flex';
-  document.getElementById('reg-cam-placeholder').textContent = '✓ Photo captured';
+  const placeholder = document.getElementById('reg-cam-placeholder');
+  placeholder.style.display = 'flex';
+  placeholder.textContent = '✓ Photo captured';
   document.getElementById('reg-snap-btn').disabled = true;
+  document.getElementById('reg-cam-toggle').textContent = 'Start Camera';
   document.getElementById('reg-photo').value = '';
 }
 
@@ -126,7 +151,25 @@ async function registerStudent() {
 
 let checkinStream = null;
 
-async function startCheckinCam() {
+function stopCheckinCam() {
+  if (checkinStream) {
+    checkinStream.getTracks().forEach(t => t.stop());
+    checkinStream = null;
+  }
+  const video = document.getElementById('checkin-video');
+  video.srcObject = null;
+  video.style.display = 'none';
+  document.getElementById('checkin-placeholder').style.display = 'flex';
+  document.getElementById('checkin-snap-btn').disabled = true;
+  document.getElementById('checkin-cam-toggle').textContent = 'Start Camera';
+  document.getElementById('checkin-cam-wrap').classList.remove('scanning');
+}
+
+async function toggleCheckinCam() {
+  if (checkinStream) {
+    stopCheckinCam();
+    return;
+  }
   try {
     checkinStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
     const video = document.getElementById('checkin-video');
@@ -134,6 +177,7 @@ async function startCheckinCam() {
     video.style.display = 'block';
     document.getElementById('checkin-placeholder').style.display = 'none';
     document.getElementById('checkin-snap-btn').disabled = false;
+    document.getElementById('checkin-cam-toggle').textContent = 'Stop Camera';
   } catch {
     setStatus('checkin-status', 'Camera access denied — use file upload instead.', 'error');
   }
@@ -172,8 +216,12 @@ async function doCheckin(photoBase64) {
 
     if (res.ok && data.matched) {
       const time = fmtTime(data.timestamp);
+      const emailMsg = data.email === 'sent'
+        ? 'Confirmation email sent.'
+        : `Email NOT sent (${data.emailError || 'unknown reason'}).`;
       setStatus('checkin-status',
-        `✓ Welcome, ${data.name}! Marked present at ${time}. Confirmation email sent.`, 'success');
+        `✓ Welcome, ${data.name}! Marked present at ${time}. ${emailMsg}`,
+        data.email === 'sent' ? 'success' : 'info');
     } else {
       setStatus('checkin-status', data.error || 'Face not recognized. Please register first.', 'error');
     }
