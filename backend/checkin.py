@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 
 REGION = os.environ.get("REGION", "ap-southeast-1")
 COLLECTION_ID = os.environ.get("COLLECTION_ID", "smart-attendance-faces")
-STUDENTS_TABLE = os.environ.get("STUDENTS_TABLE", "Students")
+USERS_TABLE = os.environ.get("USERS_TABLE", "Users")
 LOGS_TABLE = os.environ.get("LOGS_TABLE", "AttendanceLogs")
 SES_SENDER = os.environ["SES_SENDER"]
 MATCH_THRESHOLD = float(os.environ.get("MATCH_THRESHOLD", "90"))
@@ -17,7 +17,7 @@ MATCH_THRESHOLD = float(os.environ.get("MATCH_THRESHOLD", "90"))
 rekognition = boto3.client("rekognition", region_name=REGION)
 ses = boto3.client("ses", region_name=REGION)
 ddb = boto3.resource("dynamodb", region_name=REGION)
-students_table = ddb.Table(STUDENTS_TABLE)
+users_table = ddb.Table(USERS_TABLE)
 logs_table = ddb.Table(LOGS_TABLE)
 
 
@@ -69,12 +69,12 @@ def handler(event, context):
     if not matches:
         return _response(404, {"matched": False, "error": "No matching face above threshold"})
 
-    student_id = matches[0]["Face"]["ExternalImageId"]
+    user_id = matches[0]["Face"]["ExternalImageId"]
     confidence = matches[0]["Similarity"]
 
-    student = students_table.get_item(Key={"studentId": student_id}).get("Item")
-    if not student:
-        return _response(404, {"matched": False, "error": f"Face matched ExternalImageId {student_id} but no student record"})
+    user = users_table.get_item(Key={"userId": user_id}).get("Item")
+    if not user:
+        return _response(404, {"matched": False, "error": f"Face matched ExternalImageId {user_id} but no user record"})
 
     timestamp = datetime.now(timezone.utc).isoformat()
     log_id = str(uuid.uuid4())
@@ -82,8 +82,8 @@ def handler(event, context):
     logs_table.put_item(
         Item={
             "logId": log_id,
-            "studentId": student_id,
-            "name": student["name"],
+            "studentId": user_id,
+            "name": user["name"],
             "timestamp": timestamp,
             "status": "present",
             "confidence": str(round(confidence, 2)),
@@ -95,12 +95,12 @@ def handler(event, context):
     try:
         ses.send_email(
             Source=SES_SENDER,
-            Destination={"ToAddresses": [student["email"]]},
+            Destination={"ToAddresses": [user["email"]]},
             Message={
                 "Subject": {"Data": "Attendance confirmed"},
                 "Body": {
                     "Text": {
-                        "Data": f"Attendance confirmed for {student['name']} at {timestamp}."
+                        "Data": f"Attendance confirmed for {user['name']} at {timestamp}."
                     }
                 },
             },
@@ -114,8 +114,8 @@ def handler(event, context):
 
     return _response(200, {
         "matched": True,
-        "studentId": student_id,
-        "name": student["name"],
+        "studentId": user_id,
+        "name": user["name"],
         "timestamp": timestamp,
         "confidence": round(confidence, 2),
         "email": email_status,
