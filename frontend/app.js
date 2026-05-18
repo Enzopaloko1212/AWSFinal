@@ -59,7 +59,11 @@ function switchTab(name, btn) {
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if (btn) btn.classList.add('active');
-  if (name === 'attendance') loadAttendance();
+  if (name === 'attendance') {
+    const dEl = document.getElementById('att-date');
+    if (dEl && !dEl.value) dEl.value = today();
+    loadAttendance();
+  }
   if (name === 'manage') loadAllUsers();
   if (name === 'myattendance') {
     const today = new Date().toISOString().slice(0,10);
@@ -383,12 +387,42 @@ async function doCheckin(photoBase64) {
   }
 }
 
+function getAttDate() {
+  const el = document.getElementById('att-date');
+  if (el && el.value) return el.value;
+  const t = today();
+  if (el) el.value = t;
+  return t;
+}
+
+function shiftAttDate(days) {
+  const el = document.getElementById('att-date');
+  const base = new Date((el && el.value ? el.value : today()) + 'T00:00:00');
+  base.setDate(base.getDate() + days);
+  const next = base.toISOString().slice(0, 10);
+  if (next > today()) return;
+  el.value = next;
+  loadAttendance();
+}
+
+function jumpAttToday() {
+  document.getElementById('att-date').value = today();
+  loadAttendance();
+}
+
 async function loadAttendance() {
   document.getElementById('att-tbody').innerHTML =
     '<tr><td colspan="6"><div class="empty-state">Loading...</div></td></tr>';
   document.getElementById('att-status').className = 'status';
+  const t = getAttDate();
+  const isToday = t === today();
+  const lbl = document.getElementById('att-date-label');
+  if (lbl) lbl.textContent = isToday ? 'Today' : fmtDate(t + 'T12:00:00');
+  const plbl = document.getElementById('stat-present-lbl');
+  if (plbl) plbl.textContent = isToday ? 'Present Today' : 'Present';
+  const nextBtn = document.getElementById('att-next');
+  if (nextBtn) nextBtn.disabled = isToday;
   try {
-    const t = today();
     const [studRes, logsRes] = await Promise.all([
       fetch(`${API}/students`),
       fetch(`${API}/records?from=${t}&to=${t}`),
@@ -439,8 +473,8 @@ async function loadAttendance() {
 }
 
 async function markAttendance(userId, status) {
-  const date = today();
-  setStatus('att-status', `Marking ${userId} as ${status}...`, 'info');
+  const date = getAttDate();
+  setStatus('att-status', `Marking ${userId} as ${status} for ${date}...`, 'info');
   try {
     const res = await fetch(`${API}/attendance/mark`, {
       method: 'POST',
