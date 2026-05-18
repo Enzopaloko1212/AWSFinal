@@ -24,14 +24,12 @@ def _response(status, body):
 
 def handler(event, context):
     try:
-        # Roster = students only
         result = users_table.scan(
             FilterExpression=Attr("role").eq("student") | Attr("role").not_exists(),
             ProjectionExpression="userId, #n, email, registeredAt",
             ExpressionAttributeNames={"#n": "name"},
         )
         items = sorted(result.get("Items", []), key=lambda x: x.get("name", ""))
-        # Frontend still expects studentId field — alias it for compat
         students = [{"studentId": i["userId"], **{k: v for k, v in i.items() if k != "userId"}} for i in items]
         return _response(200, {"count": len(students), "students": students})
     except ClientError as e:

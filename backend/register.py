@@ -47,7 +47,6 @@ def _hash_password(password):
 def handler(event, context):
     try:
         payload = _parse_body(event)
-        # accept legacy 'studentId' or new 'userId'
         user_id = payload.get("userId") or payload["studentId"]
         name = payload["name"]
         email = payload["email"]

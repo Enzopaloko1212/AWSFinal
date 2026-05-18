@@ -13,7 +13,7 @@ USERS_TABLE = os.environ.get("USERS_TABLE", "Users")
 COLLECTION_ID = os.environ.get("COLLECTION_ID", "smart-attendance-faces")
 TOKEN_SECRET = os.environ.get("TOKEN_SECRET", "demo-secret-change-me")
 MATCH_THRESHOLD = float(os.environ.get("MATCH_THRESHOLD", "90"))
-TOKEN_TTL_SECS = 60 * 60 * 8  # 8 hours
+TOKEN_TTL_SECS = 60 * 60 * 8
 
 users_table = boto3.resource("dynamodb", region_name=REGION).Table(USERS_TABLE)
 rekognition = boto3.client("rekognition", region_name=REGION)
@@ -68,7 +68,6 @@ def handler(event, context):
     except (TypeError, ValueError):
         return _response(400, {"error": "Invalid JSON body"})
 
-    # Biometric login path
     photo_b64 = payload.get("photoBase64")
     if photo_b64:
         try:
@@ -99,7 +98,6 @@ def handler(event, context):
 
         return _response(200, {"token": _make_token(user_id, item.get("role", "student")), "user": _user_public(item)})
 
-    # Credentials login path
     user_id = payload.get("userId")
     password = payload.get("password")
     if not user_id or not password:

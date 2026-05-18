@@ -37,7 +37,6 @@ def handler(event, context):
 
     try:
         if student_id:
-            # Query by specific student using GSI
             result = logs_table.query(
                 IndexName=GSI_NAME,
                 KeyConditionExpression=Key("studentId").eq(student_id) & Key("timestamp").between(from_ts, to_ts),
@@ -45,7 +44,6 @@ def handler(event, context):
             )
             items = result.get("Items", [])
         else:
-            # Scan all logs for the date range (used by attendance tab)
             result = logs_table.scan(
                 FilterExpression=Key("timestamp").between(from_ts, to_ts),
             )
