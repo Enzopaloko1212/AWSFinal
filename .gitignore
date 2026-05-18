@@ -24,3 +24,7 @@ Thumbs.db
 # Editor
 .vscode/settings.json
 *.swp
+
+# Working folders (not for public repo)
+docs/
+Extra/
