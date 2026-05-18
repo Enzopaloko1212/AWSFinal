@@ -256,6 +256,26 @@
     }
     .badge-present { background: var(--green-bg); color: var(--green); }
     .badge-absent  { background: #fdf2f2; color: var(--red); }
+    .badge-excused { background: #fef5e7; color: #b9770e; }
+
+    .row-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+    .mini-btn {
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      border-radius: 4px;
+      border: 1px solid;
+      background: white;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .mini-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .mini-present { color: var(--green); border-color: var(--green); }
+    .mini-present:not(:disabled):hover { background: var(--green-bg); }
+    .mini-excused { color: #b9770e; border-color: #b9770e; }
+    .mini-excused:not(:disabled):hover { background: #fef5e7; }
+    .mini-absent  { color: var(--red); border-color: var(--red); }
+    .mini-absent:not(:disabled):hover { background: var(--red-light); }
     .badge-admin   { background: #fef5e7; color: #b9770e; }
     .badge-student { background: #ebf5fb; color: #2874a6; }
     .time-cell { color: var(--muted); font-size: 0.82rem; }
@@ -335,7 +355,6 @@
 
 <main>
 
-  <!-- AUTH TAB: login + register -->
   <div id="tab-auth" class="tab active">
     <div class="card">
       <div class="auth-tabs">
@@ -343,7 +362,6 @@
         <button id="auth-mode-register" onclick="setAuthMode('register')">Register</button>
       </div>
 
-      <!-- LOGIN PANE -->
       <div id="auth-pane-login">
         <h2 style="border:none;margin-bottom:12px;">Sign in to your account</h2>
 
@@ -372,7 +390,6 @@
         <div class="status" id="login-status"></div>
       </div>
 
-      <!-- REGISTER PANE -->
       <div id="auth-pane-register" style="display:none;">
         <h2 style="border:none;margin-bottom:12px;">Create your account</h2>
 
@@ -419,7 +436,6 @@
     </div>
   </div>
 
-  <!-- CHECK IN TAB -->
   <div id="tab-checkin" class="tab">
     <div id="checkin-user-banner" style="display:none;background:#eafaf1;border:1px solid #a9dfbf;border-radius:8px;padding:12px 16px;margin-bottom:12px;font-size:0.88rem;color:#1e8449;">
       Checking in as: <strong id="checkin-user-name">—</strong>
@@ -447,7 +463,6 @@
     </div>
   </div>
 
-  <!-- MY ATTENDANCE TAB (student) -->
   <div id="tab-myattendance" class="tab">
     <div class="card">
       <div class="session-bar">
@@ -472,7 +487,6 @@
     </div>
   </div>
 
-  <!-- ATTENDANCE TAB (admin) -->
   <div id="tab-attendance" class="tab">
     <div class="card">
       <div class="session-bar">
@@ -488,7 +502,7 @@
 
       <div class="table-wrap">
         <table>
-          <thead><tr><th>#</th><th>User ID</th><th>Name</th><th>Status</th><th>Time In</th></tr></thead>
+          <thead><tr><th>#</th><th>User ID</th><th>Name</th><th>Status</th><th>Time In</th><th>Mark</th></tr></thead>
           <tbody id="att-tbody">
             <tr><td colspan="5"><div class="empty-state">Click Refresh to load.</div></td></tr>
           </tbody>
@@ -498,10 +512,8 @@
     </div>
   </div>
 
-  <!-- MANAGE TAB (admin) -->
   <div id="tab-manage" class="tab">
 
-    <!-- Add Student -->
     <div class="card">
       <h2>Add New Student</h2>
 
@@ -541,7 +553,6 @@
       <div class="status" id="mgmt-add-status"></div>
     </div>
 
-    <!-- Student Roster -->
     <div class="card">
       <div class="session-bar">
         <h2>Student Roster</h2>

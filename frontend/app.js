@@ -1,7 +1,5 @@
 const API = 'https://o1z930ez5d.execute-api.ap-southeast-1.amazonaws.com/prod';
 
-// ── AUTH STATE ───────────────────────────────────────────────────────────────
-
 const SESSION_KEY = 'sas_session';
 
 function getSession() {
@@ -26,7 +24,6 @@ function applyAuthState() {
   const role = sess?.user?.role;
   const loggedIn = !!sess;
 
-  // header
   document.getElementById('who-box').style.display = loggedIn ? 'block' : 'none';
   document.getElementById('logout-btn').style.display = loggedIn ? 'inline-block' : 'none';
   if (loggedIn) {
@@ -34,33 +31,28 @@ function applyAuthState() {
     document.getElementById('who-role').textContent = role;
   }
 
-  // nav visibility
   const show = (tab, on) => {
     const btn = document.querySelector(`nav button[data-tab="${tab}"]`);
     if (btn) btn.classList.toggle('hidden', !on);
   };
   show('auth', !loggedIn);
-  show('checkin', role === 'admin');        // only admin runs the scanner
-  show('myattendance', role === 'student'); // students view their own records
-  show('attendance', role === 'admin');     // admin sees class-wide dashboard
+  show('checkin', role === 'admin');
+  show('myattendance', role === 'student');
+  show('attendance', role === 'admin');
   show('manage', role === 'admin');
 
-  // check-in banner
   const banner = document.getElementById('checkin-user-banner');
   if (banner) {
     banner.style.display = loggedIn ? 'block' : 'none';
     if (loggedIn) document.getElementById('checkin-user-name').textContent = `${sess.user.name} (${sess.user.userId})`;
   }
 
-  // if currently on a tab no longer visible, jump
   const activeBtn = document.querySelector('nav button.active');
   if (activeBtn && activeBtn.classList.contains('hidden')) {
     const firstVisible = document.querySelector('nav button:not(.hidden)');
     if (firstVisible) switchTab(firstVisible.dataset.tab, firstVisible);
   }
 }
-
-// ── UTILS ────────────────────────────────────────────────────────────────────
 
 function switchTab(name, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -103,16 +95,12 @@ function fmtDate(isoStr) {
   return new Date(isoStr).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila' });
 }
 
-// ── AUTH MODE TOGGLE ─────────────────────────────────────────────────────────
-
 function setAuthMode(mode) {
   document.getElementById('auth-mode-login').classList.toggle('active', mode === 'login');
   document.getElementById('auth-mode-register').classList.toggle('active', mode === 'register');
   document.getElementById('auth-pane-login').style.display = mode === 'login' ? 'block' : 'none';
   document.getElementById('auth-pane-register').style.display = mode === 'register' ? 'block' : 'none';
 }
-
-// ── LOGIN: CREDENTIALS ───────────────────────────────────────────────────────
 
 async function loginWithCreds() {
   const userId = document.getElementById('login-id').value.trim();
@@ -146,8 +134,6 @@ async function loginWithCreds() {
     btn.textContent = 'Log in';
   }
 }
-
-// ── LOGIN: BIOMETRIC ─────────────────────────────────────────────────────────
 
 let loginStream = null;
 
@@ -218,8 +204,6 @@ async function loginWithFace() {
   }
 }
 
-// ── REGISTER WEBCAM ──────────────────────────────────────────────────────────
-
 let regStream = null;
 let regPhotoB64 = null;
 
@@ -276,8 +260,6 @@ function snapRegPhoto() {
 
 function previewUpload() { regPhotoB64 = null; }
 
-// ── REGISTER SUBMIT ──────────────────────────────────────────────────────────
-
 async function registerUser() {
   const userId = document.getElementById('reg-id').value.trim();
   const name   = document.getElementById('reg-name').value.trim();
@@ -321,8 +303,6 @@ async function registerUser() {
     btn.textContent = 'Create Account';
   }
 }
-
-// ── CHECK IN ─────────────────────────────────────────────────────────────────
 
 let checkinStream = null;
 
@@ -403,11 +383,9 @@ async function doCheckin(photoBase64) {
   }
 }
 
-// ── ATTENDANCE (admin) ───────────────────────────────────────────────────────
-
 async function loadAttendance() {
   document.getElementById('att-tbody').innerHTML =
-    '<tr><td colspan="5"><div class="empty-state">Loading...</div></td></tr>';
+    '<tr><td colspan="6"><div class="empty-state">Loading...</div></td></tr>';
   document.getElementById('att-status').className = 'status';
   try {
     const t = today();
@@ -427,22 +405,32 @@ async function loadAttendance() {
     document.getElementById('stat-absent').textContent  = students.length ? absentCount : '—';
     if (students.length === 0) {
       document.getElementById('att-tbody').innerHTML =
-        '<tr><td colspan="5"><div class="empty-state">No students registered yet.</div></td></tr>';
+        '<tr><td colspan="6"><div class="empty-state">No students registered yet.</div></td></tr>';
       return;
     }
     document.getElementById('att-tbody').innerHTML = students.map((s, i) => {
       const log = presentMap[s.studentId];
-      const present = !!log;
-      const timeIn = present ? fmtTime(log.timestamp) : '—';
-      const badge = present
-        ? '<span class="badge badge-present">Present</span>'
-        : '<span class="badge badge-absent">Absent</span>';
+      const status = log ? (log.status || 'present') : 'absent';
+      const timeIn = log ? fmtTime(log.timestamp) : '—';
+      const badge = {
+        present:  '<span class="badge badge-present">Present</span>',
+        excused:  '<span class="badge badge-excused">Excused</span>',
+        absent:   '<span class="badge badge-absent">Absent</span>',
+      }[status];
+      const sid = JSON.stringify(s.studentId);
+      const actions = `
+        <div class="row-actions">
+          <button class="mini-btn mini-present" ${status === 'present' ? 'disabled' : ''} onclick="markAttendance(${sid}, 'present')">Present</button>
+          <button class="mini-btn mini-excused" ${status === 'excused' ? 'disabled' : ''} onclick="markAttendance(${sid}, 'excused')">Excused</button>
+          <button class="mini-btn mini-absent"  ${status === 'absent'  ? 'disabled' : ''} onclick="markAttendance(${sid}, 'absent')">Absent</button>
+        </div>`;
       return `<tr>
         <td>${i + 1}</td>
         <td style="font-family:monospace;font-size:0.84rem;">${s.studentId}</td>
         <td>${s.name}</td>
         <td>${badge}</td>
         <td class="time-cell">${timeIn}</td>
+        <td>${actions}</td>
       </tr>`;
     }).join('');
   } catch {
@@ -450,7 +438,29 @@ async function loadAttendance() {
   }
 }
 
-// ── MY ATTENDANCE (student) ──────────────────────────────────────────────────
+async function markAttendance(userId, status) {
+  const date = today();
+  setStatus('att-status', `Marking ${userId} as ${status}...`, 'info');
+  try {
+    const res = await fetch(`${API}/attendance/mark`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, status, date }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      const emailNote = data.email === 'sent'
+        ? ' (notification sent)'
+        : (data.emailError ? ` (email failed: ${data.emailError})` : '');
+      setStatus('att-status', `✓ ${userId} marked ${status}${emailNote}`, data.email === 'sent' ? 'success' : 'info');
+      await loadAttendance();
+    } else {
+      setStatus('att-status', `Error: ${data.error || 'failed'}`, 'error');
+    }
+  } catch {
+    setStatus('att-status', 'Network error.', 'error');
+  }
+}
 
 async function loadMyAttendance() {
   const sess = getSession();
@@ -479,8 +489,6 @@ async function loadMyAttendance() {
     setStatus('my-status', 'Failed to load.', 'error');
   }
 }
-
-// ── ADMIN ADD STUDENT ────────────────────────────────────────────────────────
 
 let mgmtStream = null;
 let mgmtPhotoB64 = null;
@@ -576,8 +584,6 @@ async function adminAddStudent() {
   }
 }
 
-// ── MANAGE USERS (admin) ─────────────────────────────────────────────────────
-
 async function loadAllUsers() {
   document.getElementById('manage-tbody').innerHTML =
     '<tr><td colspan="4"><div class="empty-state">Loading...</div></td></tr>';
@@ -602,11 +608,8 @@ async function loadAllUsers() {
   }
 }
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
-
 window.addEventListener('load', () => {
   applyAuthState();
-  // If logged in, jump off the auth tab to checkin
   const sess = getSession();
   if (sess) {
     const target = sess.user.role === 'admin' ? 'checkin' : 'myattendance';
